@@ -13,6 +13,7 @@ const config: Config = {
         foreground: "var(--foreground)",
         'blue-whale': '#04204A',
         'casablanca': '#F3B643',
+        'golden-bell': '#d59011'
       },
     },
   },
