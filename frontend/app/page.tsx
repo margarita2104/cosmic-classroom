@@ -4,12 +4,9 @@ export default function Home() {
 
   return (
     <>
-
       <main>
-        hello
-      </main>
 
-      <footer></footer>
+      </main>
     </>
   );
 }
