@@ -8,3 +8,4 @@ const BASE_URL =
 export const AxiosCosmicClassroom = axios.create({
   baseURL: BASE_URL,
 });
+
