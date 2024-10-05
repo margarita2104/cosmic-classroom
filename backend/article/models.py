@@ -1,9 +1,11 @@
 from django.db import models
-from user.models import User
+from project import settings
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 def get_image_upload_path(instance, filename):
     return f'{instance.id}/article_images/{filename}'
-
 
 class Article(models.Model):
   name = models.CharField(max_length=100, blank=True, null=True)
