@@ -21,6 +21,7 @@ const SignUp = () => {
       });
       setResponse(response);
     } catch (error) {
+      console.error(error);
       setError("Email Failed");
     }
   };
