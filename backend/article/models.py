@@ -12,4 +12,4 @@ class Article(models.Model):
   description = models.CharField(max_length=200, blank=True, null=True)
   link = models.URLField(max_length=200, blank=True, null=True)
   image = image = models.ImageField(upload_to=get_image_upload_path, null=True, blank=True)
-  favourited_by = models.ManyToManyField(to=User, blank=True, null=True)
+  favourited_by = models.ManyToManyField(to=User, blank=True, null=True, related_name="favorite_resources")
