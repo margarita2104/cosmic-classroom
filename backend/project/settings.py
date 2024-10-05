@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # own apps
     'user',
     'article',
+    'lesson',
 ]
 
 MIDDLEWARE = [
