@@ -1,5 +1,5 @@
-import earthImage from "./assets/images/earth.png";
-import rocketImage from "./assets/images/rocket.png";
+// import earthImage from "./assets/images/earth.png";
+// import rocketImage from "./assets/images/rocket.png";
 
 export default function Home() {
   // This part is used for the TypeScript functions
