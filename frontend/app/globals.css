@@ -18,7 +18,34 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-image: url('../assets/images/background.png');
+  font-family: 'Montserrat', Helvetica, sans-serif;
+}
+
+header {
+  font-family: 'Nasalization', sans-serif;
+}
+
+@font-face {
+  font-family: 'Nasalization';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/Nasalization.woff');
+}
+
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/Montserrat-Regular.woff');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../assets/fonts/Montserrat-Bold.woff');
 }
 
 @layer utilities {
