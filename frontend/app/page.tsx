@@ -18,7 +18,7 @@ export default function Home() {
               technology.
             </p>
             <h3 className="text-xl mb-4">
-              Let's explore the universe together!
+              Let&#39;s explore the universe together!
             </h3>
             <button className="w-3/12 text-4xl bg-yellow-500 text-gray-800 py-2 px-4 rounded-full hover:bg-yellow-400 transition duration-300 font-bold">
               Start
