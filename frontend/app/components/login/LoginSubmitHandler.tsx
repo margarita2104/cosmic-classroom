@@ -1,13 +1,15 @@
+import { useRouter } from "next/navigation";
 import { AxiosCosmicClassroom } from "../../axios/Axios";
 import { login_user } from "../../store/slices/UserSlice";
 import { AxiosError } from "axios"; 
+import { AppDispatch } from "@/app/store/store";
 
 const LoginSubmitHandler = async (
   email: string,
   password: string,
   setError: (error: string) => void,
-  dispatch: any,
-  router: any
+  dispatch: AppDispatch,
+  router: ReturnType<typeof useRouter>
 ) => {
   try {
     const response = await AxiosCosmicClassroom.post("/auth/token/", {

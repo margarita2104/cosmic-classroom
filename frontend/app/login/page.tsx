@@ -1,4 +1,4 @@
-"use client"; // This line should be at the very top
+"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
