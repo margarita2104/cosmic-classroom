@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/app/components/header/Header";
+import { Providers } from "./store/providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,11 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`antialiased flex flex-col min-h-screen text-white`}>
-        <Header />
-        <div className="px-5">{children}</div>
-      </body>
-    </html>
+    <Providers>
+      <html lang="en">
+        <body className={`antialiased flex flex-col min-h-screen text-white`}>
+          <Header />
+          <div className="px-5">{children}</div>
+        </body>
+      </html>
+    </Providers>
   );
 }
