@@ -1,4 +1,4 @@
-import Header from "@/components/header/Header";
+import Header from "@/app/components/header/Header";
 
 export default function Home() {
   // This part is used for the TypeScript functions
@@ -6,9 +6,10 @@ export default function Home() {
 
   return (
     <>
-      <Header />
 
-      <main className="text-white px-5"></main>
+      <main>
+        hello
+      </main>
 
       <footer></footer>
     </>
