@@ -1,4 +1,4 @@
-// This part is used for the imports
+import Header from "@/components/header/Header";
 
 export default function Home() {
   // This part is used for the TypeScript functions
@@ -6,17 +6,11 @@ export default function Home() {
 
   return (
     <>
-      <header className="flex">
-      
-      </header>
+      <Header />
 
-      <main>
+      <main className="text-white px-5"></main>
 
-      </main>
-
-      <footer>
-
-      </footer>
+      <footer></footer>
     </>
   );
 }

@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'blue-whale': '#04204A',
+        'casablanca': '#F3B643',
       },
     },
   },
