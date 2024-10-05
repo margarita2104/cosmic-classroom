@@ -26,5 +26,6 @@ urlpatterns = [
     path('token/verify/', jwt_views.TokenVerifyView.as_view(), name='token_refresh'),
     
     path('articles/', include('article.urls')),
-    path('lessons/', include('lesson.urls'))
+    path('lessons/', include('lesson.urls')),
+    path('user/', include('user.urls')),
 ]
