@@ -1,5 +1,5 @@
-// import earthImage from "./assets/images/earth.png";
-// import rocketImage from "./assets/images/rocket.png";
+import earthImage from "./assets/images/earth.png";
+import rocketImage from "./assets/images/rocket.png";
 
 export default function Home() {
   // This part is used for the TypeScript functions
@@ -22,12 +22,12 @@ export default function Home() {
           <strong>Let&#39;s explore the universe together!</strong>
         </h3>
         <button className="btn-yellow text-2xl">Start</button>
-        <div>
-          <div>
-            {/* <img src={earthImage} alt="Earth" className="w-1/2" /> */}
+        <div className="flex relative">
+          <div className="absolute -left-[450px]">
+            <img src={earthImage.src} alt="Earth" className="w-2/3" />
           </div>
-          <div>
-            {/* <img src={rocketImage} alt="Rocket" className="w-1/2" /> */}
+          <div className="relative left-[300px]">
+            <img src={rocketImage.src} alt="Rocket" className="w-2/3" />
           </div>
         </div>
       </main>
