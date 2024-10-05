@@ -33,7 +33,6 @@ header {
   src: url('../assets/fonts/Nasalization.woff');
 }
 
-
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
@@ -52,4 +51,21 @@ header {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.btn-yellow {
+  font-family: 'Nasalization';
+  padding: 15px 30px;
+  background-color: #F3B643;
+  border-radius: 100px;
+  color: black;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btn-yellow:hover {
+  background-color: #d59011;
+}
+
+.font-nasalization {
+  font-family: 'Nasalization';
 }

@@ -15,7 +15,7 @@ const Header = () => {
         <div className="flex items-center gap-8">
           <Link href="/login">Log in</Link>
           <Link
-            className="text-black py-2 px-3 bg-casablanca rounded-full"
+            className="text-black py-2 px-3 bg-casablanca rounded-full hover:bg-golden-bell"
             href="/sign-up"
           >
             Sign up
