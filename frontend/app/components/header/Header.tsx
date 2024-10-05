@@ -9,14 +9,14 @@ const Header = () => {
       </Link>
       <nav className="flex w-3/4 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/">Lesson planner</Link>
-          <Link href="/">Resources</Link>
+          <Link href="/lesson-planner">Lesson planner</Link>
+          <Link href="/resources">Resources</Link>
         </div>
         <div className="flex items-center gap-8">
-          <Link href="/">Log in</Link>
+          <Link href="/login">Log in</Link>
           <Link
             className="text-black py-2 px-3 bg-casablanca rounded-full"
-            href="/"
+            href="/sign-up"
           >
             Sign up
           </Link>
