@@ -1,56 +1,107 @@
-Cosmic Classroom - Kepler's Horizon's Submission project for the 2024 NASA Space Apps Challenge
+<img src="frontend/app/assets/images/rocket.png">
 
-How to setup a Next.js project Clone the Repo Open the folder on your code editor Open the console under the project folder Hit “npm install” Good to go !
+# Cosmic Classroom
+Kepler's Horizon's Submission project for the 2024 NASA Space Apps Challenge
+The following participants involved in this project:
+<strong>Alan Geirnaert, Mamoona Quddus, Margarita Ferreira, Muhammad Rayyan, Olivier Lüthy, Valdilene Siqueira.</strong>
 
-If you want to run it, hit “npm run dev” You’re free to separate the backend from the frontend. However, for the frontend, use that structure: app > page.tsx (home page) app > nameOfPageFolder (attention, the name of the folder defines the name in the URL) > page.tsx
-I created an example for you.
+## Technologies used
+1. Next.js
+2. Django
+3. Axios
 
-The layout.tsx serves for the MetaData and the basic structure of the webpage. Once you’ve configured the file, it will remain the same for all the other pages created. If you want to modify it, you need to create another layout.tsx file under the nameOfPageFolder, along with the page.tsx
+## Project Setup Guide
 
-The globals.tsx file serves as a CSS file. But the easier will be to use Tailwind directly and in the page.tsx file under this structure :
+This guide will help you set up the project using Next.js for the frontend and Django for the backend.
 
-<div className="flex">
-</div>
+### Prerequisites
 
-If you’ve never used Tailwind before, you can check their website.
+Make sure you have the following installed on your machine:
 
-The public folder is used for all the static files such as images and all.
+- Python 3.x
+- Node.js and npm
+- Django
+- Virtualenv
 
------------------------------------------------------------------------------------------------------------------------------------------------------
+### Getting Started
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+#### Backend Setup (Django)
 
-## Getting Started
+1. **Clone the repository**:
 
-First, run the development server:
+   ```bash
+   git clone <repository-url>
+   cd <repository-name>
+   ```
+2. **Navigate to the frontend directory** (if applicable):
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```bash
+   cd backend
+   ```
+3. **Create a virtual environment**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   python -m venv .venv
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. **Activate the virtual environment**:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+     ```bash
+     python -m venv .venv. .venv/bin/activate
+     ```
 
-## Learn More
+5. **Install the required Python packages**:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+6. **Run database migrations**:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   python manage.py migrate
+   ```
 
-## Deploy on Vercel
+7. **Create a superuser (optional)**:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+8. **Start the Django development server**:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+#### Frontend Setup (Next.js)
+
+1. **Navigate to the frontend directory** (if applicable):
+
+   ```bash
+   cd frontend
+   ```
+
+2. **Install the required Node.js packages**:
+
+   ```bash
+   npm install
+   ```
+
+3. **Start the Next.js development server**:
+
+   ```bash
+   npm run dev
+   ```
+
+### Accessing the Application
+
+- The Django backend will be running on `http://127.0.0.1:8000/`.
+- The Next.js frontend will typically be available at `http://localhost:3000/`.
+
+Note that both environments need to be running so that you can see the items that have been retrieved from the database while you're accessing the frontend.
+
+### Additional Notes
+
+- Make sure to check your `.env` file for any environment variables required for the project.
+- For production deployment, follow the respective deployment guides for Django and Next.js.
