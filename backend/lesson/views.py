@@ -12,9 +12,10 @@ from LessonPlanGenerator.app import create_lesson_plan_from_user_input
 class LessonCreateListView(ListCreateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated]
-
+    
     def post(self, request, *args, **kwargs):
         lesson_data = request.data
+        lesson_data["user"] = request.user.id
         serializer = self.get_serializer(data = lesson_data)
         serializer.is_valid(raise_exception=True)
         
@@ -26,6 +27,7 @@ class LessonCreateListView(ListCreateAPIView):
         class_length = serializer.validated_data.get('class_length')
         learning_styles = serializer.validated_data.get('learning_styles')
         
+      
         if user_prompt:
             pdf_file_path, lesson_plan = create_lesson_plan_from_user_input(user_prompt)
         else:    
