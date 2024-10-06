@@ -24,8 +24,7 @@ const LessonPlanner = () => {
   const accessToken = useAppSelector((state) => state.user.accessToken);
 
   const handleCreateLessonPlan = async () => {
-    console.log(accessToken);
-
+    setLoading(true);
     // Post the user input (transcript) to the API
     const response = await AxiosCosmicClassroom.post(
       "/lessons/",
@@ -138,12 +137,14 @@ const LessonPlanner = () => {
         </button>
       </div>
 
-      <button
-        onClick={handleCreateLessonPlan}
-        className="flex justify-center self-center btn-yellow w-56"
-      >
-        Create lesson plan
-      </button>
+      {!loading && (
+        <button
+          onClick={handleCreateLessonPlan}
+          className="flex justify-center self-center btn-yellow w-56"
+        >
+          Create lesson plan
+        </button>
+      )}
 
       {/* Display loading state */}
       {loading && <p className="text-center">Loading lesson plan...</p>}
