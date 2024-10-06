@@ -22,7 +22,7 @@ body {
   font-family: 'Montserrat', Helvetica, sans-serif;
 }
 
-header {
+header, .nasa-font {
   font-family: 'Nasalization', sans-serif;
 }
 
