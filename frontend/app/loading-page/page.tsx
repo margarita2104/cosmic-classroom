@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 
 const LoadingPage = () => {
-  {/*const dispatch = useDispatch(); => had to comment out because it had conflicts with Vercel*/}
+  // const dispatch = useDispatch(); => had to comment out because it had conflicts with Vercel
   const router = useRouter();
 
   useEffect(() => {
