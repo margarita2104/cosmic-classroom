@@ -10,39 +10,38 @@ import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png"
 const LessonPlanner = () => {
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
 
   useEffect(() => {
-    let recognition: SpeechRecognition | null = null;
-
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
+      const newRecognition = new SpeechRecognition();
+      newRecognition.continuous = true;
+      newRecognition.interimResults = true;
 
-      recognition.onresult = (event) => {
+      newRecognition.onresult = (event) => {
         const current = event.resultIndex;
         const transcriptText = event.results[current][0].transcript;
         setTranscript(transcriptText.trim());
       };
 
-      recognition.onend = () => {
+      newRecognition.onend = () => {
         if (isListening) {
-          recognition?.start();
+          newRecognition.start();
         }
       };
-    }
 
+      setRecognition(newRecognition);
+    }
+  }, []);
+
+  useEffect(() => {
     if (isListening && recognition) {
       recognition.start();
+    } else if (!isListening && recognition) {
+      recognition.stop();
     }
-
-    return () => {
-      if (recognition) {
-        recognition.stop();
-      }
-    };
-  }, [isListening]);
+  }, [isListening, recognition]);
 
   const toggleListening = () => {
     setIsListening(!isListening);
