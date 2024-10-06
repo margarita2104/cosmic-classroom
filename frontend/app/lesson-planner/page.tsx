@@ -1,8 +1,51 @@
-import starComet from "@/app/assets/images/lesson-planner/star-comet.png"
-import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png"
-import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png"
+"use client"
+
+import { useState } from "react";
+import { Mic, MicOff } from "lucide-react";
+import starComet from "@/app/assets/images/lesson-planner/star-comet.png";
+import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png";
+import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png";
 
 const LessonPlanner = () => {
+  const [isListening, setIsListening] = useState(false);
+  const [inputText, setInputText] = useState("");
+
+  const toggleListening = () => {
+    if (!isListening) {
+      startListening();
+    } else {
+      stopListening();
+    }
+    setIsListening(!isListening);
+  };
+
+  const startListening = () => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new (window as any).webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0])
+          .map((result: any) => result.transcript)
+          .join('');
+        setInputText(transcript);
+      };
+
+      recognition.start();
+    } else {
+      console.log('Speech recognition not supported');
+    }
+  };
+
+  const stopListening = () => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new (window as any).webkitSpeechRecognition();
+      recognition.stop();
+    }
+  };
+
   return (
     <main className="flex flex-col gap-8 p-8 sm:container text-white/80 md:w-2/3 self-center">
       <h3 className="font-bold drop-shadow-lg text-xl text-center self-center mt-12 z-1 nasa-font">Lesson planner</h3>
@@ -26,12 +69,21 @@ const LessonPlanner = () => {
 
       <div className="box-color-lesson rounded-2xl text-black">
         <h4 className="bg-[#F3B643] rounded-full py-2 px-4 font-bold">Tell us more about your lesson</h4>
-        <textarea 
-          placeholder="e.g. 25 students, ages 10-12, limited technology, introducing exoplanets, focus on visual learning, 45 minutes" 
-          className="flex bg-transparent rounded-2xl h-64 w-full placeholder:text-black/80 p-4 resize-none"
-        />
+        <div className="relative">
+          <textarea 
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="e.g. 25 students, ages 10-12, limited technology, introducing exoplanets, focus on visual learning, 45 minutes" 
+            className="flex bg-transparent rounded-2xl h-64 w-full placeholder:text-black/80 p-4 resize-none"
+          />
+          <button
+            onClick={toggleListening}
+            className="absolute bottom-4 right-4 bg-[#F3B643] rounded-full p-2"
+          >
+            {isListening ? <MicOff size={24} /> : <Mic size={24} />}
+          </button>
+        </div>
       </div>
-      
 
       <button className="flex justify-center self-center btn-yellow w-56">Create lesson plan</button>
 
