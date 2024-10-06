@@ -31,6 +31,8 @@ interface CountryOption {
   value: string;
 }
 
+const countryOptions: CountryOption[] = countryList().getData(); // Fetch country options here
+
 export default function Dashboard() {
   const [editProfileInfo, setEditProfileInfo] = useState(false);
   const [addResourceMode, setAddResourceMode] = useState(false);
@@ -43,7 +45,6 @@ export default function Dashboard() {
     avatar: null,
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-
   const [article, setArticle] = useState<Article>({
     name: "",
     description: "",
@@ -61,7 +62,6 @@ export default function Dashboard() {
           },
         });
         const { first_name, last_name, email, country, avatar } = response.data;
-        console.log("Fetched avatar:", avatar);
 
         setUserInfo({
           firstName: first_name,
@@ -148,23 +148,22 @@ export default function Dashboard() {
       }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        if (error.response) {
-          console.error("Error adding article:", error.response.data);
-        } else {
-          console.error("Axios error:", error.message);
-        }
+        console.error(
+          "Error adding article:",
+          error.response?.data || error.message
+        );
       } else {
         console.error("An unexpected error occurred:", error);
       }
     }
   };
 
-  // const handleCountryChange = (selectedOption: CountryOption | null) => {
-  //   setUserInfo((prevState) => ({
-  //     ...prevState,
-  //     location: selectedOption ? selectedOption.value : "",
-  //   }));
-  // };
+  const handleCountryChange = (selectedOption: CountryOption | null) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      location: selectedOption ? selectedOption.value : "",
+    }));
+  };
 
   const handleSave = async () => {
     try {
@@ -180,69 +179,37 @@ export default function Dashboard() {
         formData.append("last_name", userInfo.lastName);
         formData.append("country", userInfo.location || "");
 
-        const updatedUserInfo = {
-          email: userInfo.email,
-          first_name: userInfo.firstName,
-          last_name: userInfo.lastName,
-          country: userInfo.location || "",
-        };
-
-        console.log("Updating user info with:", updatedUserInfo);
-
         let response;
-        if (formData) {
-          response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          });
-        } else {
-          response = await AxiosCosmicClassroom.patch(
-            "/user/me/",
-            updatedUserInfo,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-        }
+        response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         console.log("User info updated:", response.data);
-        await fetchUserInfo(); 
-        setAvatarFile(null); 
+        await fetchUserInfo();
+        setAvatarFile(null);
         setEditProfileInfo(false);
       }
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Failed to update user info:", error.message);
-      } else if (isAxiosError(error)) {
-        if (error.response) {
-          console.error("Error updating user info:", error.response.data);
-        } else {
-          console.error("Axios error without response:", error.message);
-        }
+      if (error instanceof AxiosError) {
+        console.error(
+          "Error updating user info:",
+          error.response?.data || error.message
+        );
       } else {
         console.error("An unexpected error occurred:", error);
       }
     }
   };
 
-  function isAxiosError(error: unknown): error is AxiosError {
-    return (error as AxiosError).response !== undefined;
-  }
-
-  const countryOptions = countryList().getData();
-
   return (
     <main className="flex flex-col gap-4 container py-4">
       <section className="flex max-sm:flex-col max-sm:text-center items-center gap-2">
         <div className="flex rounded-full w-24 h-24 overflow-hidden">
-          {/* Display user avatar if available, else fallback to userTest image */}
           <img
-            src={userInfo.avatar ? userInfo.avatar : userTest.src}
+            src={userInfo.avatar || userTest.src}
             alt="User avatar"
             className="cover"
           />
@@ -325,8 +292,7 @@ export default function Dashboard() {
                   name="firstName"
                   value={userInfo.firstName}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="First Name"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
@@ -339,8 +305,20 @@ export default function Dashboard() {
                   name="lastName"
                   value={userInfo.lastName}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Last Name"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <span className="w-24">
+                  <strong>Email</strong>
+                </span>
+                <input
+                  type="email"
+                  name="email"
+                  value={userInfo.email}
+                  onChange={handleInputChange}
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
@@ -349,52 +327,39 @@ export default function Dashboard() {
                   <strong>Location</strong>
                 </span>
                 <Select
-                  name="location"
                   options={countryOptions}
-                  value={{ label: userInfo.location, value: userInfo.location }}
-                  onChange={(selectedOption) =>
-                    setUserInfo((prev) => ({
-                      ...prev,
-                      location: selectedOption?.value || "",
-                    }))
-                  }
-                />
-              </div>
-
-              {/* Avatar upload input */}
-              <div className="flex gap-2">
-                <span className="w-24">
-                  <strong>Avatar</strong>
-                </span>
-                <input
-                  type="file"
-                  name="avatar"
-                  onChange={handleAvatarChange}
+                  value={countryOptions.find(
+                    (country) => country.value === userInfo.location
+                  )}
+                  onChange={handleCountryChange}
+                  className="w-full"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2 self-end">
-              <button
-                className="bg-white rounded-2xl py-2 px-4 hover:bg-red-700 hover:scale-105 duration-200 transition-all"
-                onClick={() => setEditProfileInfo(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-white rounded-2xl py-2 px-4 hover:bg-green-700 hover:scale-105 duration-200 transition-all"
-                onClick={handleSave}
-              >
-                Save
-              </button>
+            <div className="flex flex-col gap-2">
+              <strong>Avatar</strong>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="file:bg-blue-500 file:text-white"
+              />
             </div>
+
+            <button
+              onClick={handleSave}
+              className="bg-[#f3b643] w-full rounded-2xl p-3 text-white"
+            >
+              Save changes
+            </button>
           </section>
         )}
 
         {addResourceMode && (
           <section className="flex flex-col gap-4 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
-            <h3 className="font-bold">Add a Resource</h3>
-            <div className="flex flex-wrap gap-6 pr-24">
+            <h3 className="font-bold">Add resource</h3>
+            <div className="flex flex-col gap-6 pr-24">
               <div className="flex gap-2">
                 <span className="w-24">
                   <strong>Name</strong>
@@ -404,8 +369,7 @@ export default function Dashboard() {
                   name="name"
                   value={article.name}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Resource name"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
@@ -417,8 +381,8 @@ export default function Dashboard() {
                   name="description"
                   value={article.description}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Brief description"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
+                  rows={3}
                 />
               </div>
 
@@ -431,8 +395,7 @@ export default function Dashboard() {
                   name="link"
                   value={article.link}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="https://resource-link.com"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
@@ -440,24 +403,21 @@ export default function Dashboard() {
                 <span className="w-24">
                   <strong>Image</strong>
                 </span>
-                <input type="file" name="image" onChange={handleFileChange} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="file:bg-blue-500 file:text-white"
+                />
               </div>
             </div>
 
-            <div className="flex gap-2 self-end">
-              <button
-                className="bg-white rounded-2xl py-2 px-4 hover:bg-red-700 hover:scale-105 duration-200 transition-all"
-                onClick={() => setAddResourceMode(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-white rounded-2xl py-2 px-4 hover:bg-green-700 hover:scale-105 duration-200 transition-all"
-                onClick={handleAddResource}
-              >
-                Add Resource
-              </button>
-            </div>
+            <button
+              onClick={handleAddResource}
+              className="bg-[#f3b643] w-full rounded-2xl p-3 text-white"
+            >
+              Add resource
+            </button>
           </section>
         )}
       </div>
