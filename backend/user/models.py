@@ -14,4 +14,4 @@ class User(AbstractUser):
 
 
     def __str__(self):
-        return self.username
+        return f"user_id {self.id}: {self.username}"

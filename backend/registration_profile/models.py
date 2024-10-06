@@ -35,3 +35,6 @@ class RegistrationProfile(models.Model):
         profile, created = RegistrationProfile.objects.get_or_create(user=instance)
         if created:
             profile.save()
+
+    def __str__(self):
+        return f"profile_{self.id}: {self.user.email}"
