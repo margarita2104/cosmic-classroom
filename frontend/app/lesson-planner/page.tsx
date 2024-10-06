@@ -20,7 +20,6 @@ const LessonPlanner = () => {
 
   const [lesson, setLesson] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const accessToken = useAppSelector((state) => state.user.accessToken);
 
@@ -46,7 +45,6 @@ const LessonPlanner = () => {
 
     const data = response.data;
     setLesson(data.created_lesson); // Assuming the API returns a lesson plan
-    console.log("Response received:", lesson);
     setLoading(false); // Stop loading state
     console.log("loading", loading);
   };
@@ -149,9 +147,6 @@ const LessonPlanner = () => {
 
       {/* Display loading state */}
       {loading && <p className="text-center">Loading lesson plan...</p>}
-
-      {/* Display error message */}
-      {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* Display lesson data in boxes */}
       {lesson && (
