@@ -1,6 +1,8 @@
 import earthImage from "./assets/images/earth.png";
 import rocketImage from "./assets/images/rocket.png";
 
+import Link from "next/link"
+
 export default function Home() {
   // This part is used for the TypeScript functions
   // If you're not familiar with TS, you can add a JavaScript file instead
@@ -21,7 +23,7 @@ export default function Home() {
         <h3 className="mb-4">
           <strong>Let&#39;s explore the universe together!</strong>
         </h3>
-        <button className="btn-yellow text-2xl">Start</button>
+        <Link href={"/sign-up"} className="btn-yellow text-2xl">Start</Link>
         <div className="flex relative">
           <div className="absolute -left-[450px]">
             <img src={earthImage.src} alt="Earth" className="w-2/3" />
