@@ -37,9 +37,9 @@ const Header = () => {
               Authorization: `Bearer ${accessToken}`,
             },
           });
-          console.log(response.data); 
-          setUserFirstName(response.data.username || "");
-          localStorage.setItem("userFirstName", response.data.username || "");
+          console.log(response.data);
+          setUserFirstName(response.data.first_name || "");
+          localStorage.setItem("userFirstName", response.data.first_name || "");
         } catch (error) {
           console.error("Failed to fetch user details:", error);
         }
