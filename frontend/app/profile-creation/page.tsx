@@ -82,7 +82,7 @@ export default function ProfileCreation() {
             router.push
           );
         }
-      } catch (error: any) {
+      } catch (error: string) {
         console.error("Error during submission:", error);
         errorSetter(error.response?.data?.message || "An error occurred");
       }
