@@ -23,7 +23,13 @@ const LessonPlanner = () => {
       recognition.onresult = (event) => {
         const current = event.resultIndex;
         const transcriptText = event.results[current][0].transcript;
-        setTranscript((prev) => prev + ' ' + transcriptText);
+        setTranscript(transcriptText.trim());
+      };
+
+      recognition.onend = () => {
+        if (isListening) {
+          recognition?.start();
+        }
       };
     }
 
