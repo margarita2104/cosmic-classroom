@@ -6,6 +6,7 @@ import { useAppSelector } from "@/app/store/store";
 
 import { Mic, MicOff } from "lucide-react";
 import starComet from "@/app/assets/images/lesson-planner/star-comet.png";
+import loadingImage from "@/app/assets/images/loading-page/loading-page.png";
 import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png";
 import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png";
 
@@ -24,8 +25,7 @@ const LessonPlanner = () => {
   const accessToken = useAppSelector((state) => state.user.accessToken);
 
   const handleCreateLessonPlan = async () => {
-    console.log(accessToken);
-
+    setLoading(true);
     // Post the user input (transcript) to the API
     const response = await AxiosCosmicClassroom.post(
       "/lessons/",
@@ -138,12 +138,14 @@ const LessonPlanner = () => {
         </button>
       </div>
 
-      <button
-        onClick={handleCreateLessonPlan}
-        className="flex justify-center self-center btn-yellow w-56"
-      >
-        Create lesson plan
-      </button>
+      {!loading && (
+        <button
+          onClick={handleCreateLessonPlan}
+          className="flex justify-center self-center btn-yellow w-56"
+        >
+          Create lesson plan
+        </button>
+      )}
 
       {/* Display loading state */}
       {loading && <p className="text-center">Loading lesson plan...</p>}
