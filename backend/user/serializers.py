@@ -8,4 +8,4 @@ class UserSerializer(serializers.ModelSerializer):
     country = serializers.CharField(source='country.name')
     class Meta:
         model = User
-        fields = ['email', 'username', 'country']
+        fields = ['email', 'username', 'country', 'first_name', 'last_name']

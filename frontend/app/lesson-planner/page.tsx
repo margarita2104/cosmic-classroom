@@ -1,69 +1,50 @@
 "use client"
 
-import { useState } from "react";
-import { Mic, MicOff } from "lucide-react";
-import starComet from "@/app/assets/images/lesson-planner/star-comet.png";
-import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png";
-import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png";
+import { useState, useEffect } from 'react';
 
-// Define types for the SpeechRecognition API
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionResultList {
-  [index: number]: SpeechRecognitionResult;
-  length: number;
-}
-
-interface SpeechRecognitionResult {
-  [index: number]: SpeechRecognitionAlternative;
-  length: number;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
+import { Mic, MicOff } from "lucide-react"
+import starComet from "@/app/assets/images/lesson-planner/star-comet.png"
+import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png"
+import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png"
 
 const LessonPlanner = () => {
+  const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [inputText, setInputText] = useState("");
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
 
-  const toggleListening = () => {
-    if (!isListening) {
-      startListening();
-    } else {
-      stopListening();
-    }
-    setIsListening(!isListening);
-  };
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const newRecognition = new SpeechRecognition();
+      newRecognition.continuous = true;
+      newRecognition.interimResults = true;
 
-  const startListening = () => {
-    if ('webkitSpeechRecognition' in window) {
-      const recognition = new (window as any).webkitSpeechRecognition() as SpeechRecognition;
-      recognition.continuous = true;
-      recognition.interimResults = true;
-
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = Array.from(event.results)
-          .map((result) => result[0])
-          .map((result) => result.transcript)
-          .join('');
-        setInputText(transcript);
+      newRecognition.onresult = (event) => {
+        const current = event.resultIndex;
+        const transcriptText = event.results[current][0].transcript;
+        setTranscript(transcriptText.trim());
       };
 
-      recognition.start();
-    } else {
-      console.log('Speech recognition not supported');
-    }
-  };
+      newRecognition.onend = () => {
+        if (isListening) {
+          newRecognition.start();
+        }
+      };
 
-  const stopListening = () => {
-    if ('webkitSpeechRecognition' in window) {
-      const recognition = new (window as any).webkitSpeechRecognition() as SpeechRecognition;
+      setRecognition(newRecognition);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isListening && recognition) {
+      recognition.start();
+    } else if (!isListening && recognition) {
       recognition.stop();
     }
+  }, [isListening, recognition]);
+
+  const toggleListening = () => {
+    setIsListening(!isListening);
   };
 
   return (
@@ -89,21 +70,21 @@ const LessonPlanner = () => {
 
       <div className="box-color-lesson rounded-2xl text-black">
         <h4 className="bg-[#F3B643] rounded-full py-2 px-4 font-bold">Tell us more about your lesson</h4>
-        <div className="relative">
-          <textarea 
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="e.g. 25 students, ages 10-12, limited technology, introducing exoplanets, focus on visual learning, 45 minutes" 
-            className="flex bg-transparent rounded-2xl h-64 w-full placeholder:text-black/80 p-4 resize-none"
-          />
-          <button
-            onClick={toggleListening}
-            className="absolute bottom-4 right-4 bg-[#F3B643] rounded-full p-2"
-          >
-            {isListening ? <MicOff size={24} /> : <Mic size={24} />}
-          </button>
-        </div>
+        <textarea 
+          value={transcript}
+          onChange={(e) => setTranscript(e.target.value)}
+          placeholder="e.g. 25 students, ages 10-12, limited technology, introducing exoplanets, focus on visual learning, 45 minutes" 
+          className="flex bg-transparent rounded-2xl h-64 w-full placeholder:text-black/80 p-4 resize-none"
+        />
+        <button 
+        onClick={toggleListening} 
+        className={`flex justify-center self-center bg-[#F3B643] p-2 rounded-bl-2xl rounded-tr-2xl ${isListening ? 'bg-red-500' : ''}`}
+      >
+        {isListening ? <MicOff /> : <Mic />}
+      </button>
       </div>
+      
+      
 
       <button className="flex justify-center self-center btn-yellow w-56">Create lesson plan</button>
 
