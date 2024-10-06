@@ -7,17 +7,23 @@
         "runtime": "python3.10",
         "maxLambdaSize": "15mb"
       }
+    },
+    {
+      "src": "vercel_migration.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles_build"
+      }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
       "dest": "project/wsgi.py"
-    }
-  ],
-  "hooks": [
+    },
     {
-      "build": "bash vercel_migration.sh"
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
     }
   ]
 }
