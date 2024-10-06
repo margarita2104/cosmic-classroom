@@ -4,7 +4,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AxiosCosmicClassroom } from "../axios/Axios";
-import LoginSubmitHandler from "../components/login/LoginSubmitHandler"; 
+import LoginSubmitHandler from "../components/login/LoginSubmitHandler";
+
+interface AxiosError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export default function ProfileCreation() {
   const router = useRouter();
@@ -50,7 +58,7 @@ export default function ProfileCreation() {
       console.log("Password is too common");
       return;
     }
-    errorSetter(""); 
+    errorSetter("");
 
     if (password === passwordRepeat) {
       console.log("Passwords match, proceeding with submission");
@@ -73,13 +81,21 @@ export default function ProfileCreation() {
         if (response.status === 201) {
           setSuccess("Registration successful! Logging in...");
 
-          await LoginSubmitHandler(email, password, errorSetter, dispatch, router);
+          await LoginSubmitHandler(
+            email,
+            password,
+            errorSetter,
+            dispatch,
+            router
+          );
 
           router.push("/login");
+          LoginSubmitHandler(email, password, errorSetter, dispatch, router);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
         console.error("Error during submission:", error);
-        errorSetter(error.response?.data?.message || "An error occurred");
+        errorSetter(axiosError.response?.data?.message || "An error occurred");
       }
     } else {
       alert("Please make sure your passwords match");
@@ -121,7 +137,7 @@ export default function ProfileCreation() {
           <div className="flex flex-col gap-1">
             <label htmlFor="email">Email</label>
             <input
-              type="email" 
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="md:w-96 py-3 px-4 bg-white/70 rounded-3xl text-black placeholder:text-gray-600 outline-none border-2 border-transparent hover:border-blue-900"
