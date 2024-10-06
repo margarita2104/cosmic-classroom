@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "rest_framework_simplejwt",
     'corsheaders',
+    'drf_yasg',
 
 
     # own apps
@@ -171,3 +172,20 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
+
+
+SWAGGER_SETTINGS = {
+    # 'USE_SESSION_AUTH': True,  # Change settings to True to enable Django Login option
+    # 'LOGIN_URL': 'admin/',  # URL For Django Login
+    # 'LOGOUT_URL': 'admin/logout/',  # URL For Django Logout
+    'SECURITY_DEFINITIONS': { # Allows usage of Access token to make requests on the docs.
+        'Basic': {
+            'type': 'basic'
+      },
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
