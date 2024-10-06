@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import Link from "next/link";
 import { X, Menu } from "lucide-react";
 import { login_user, logout_user } from "@/app/store/slices/UserSlice";
