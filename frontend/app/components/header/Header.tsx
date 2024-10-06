@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 
-import Logo from "../svg.image/Logo";
 import Link from "next/link";
 
 import { X, Menu } from "lucide-react"
@@ -19,12 +18,12 @@ const Header = () => {
       
       <nav className="flex items-center">
         <div className="flex items-center gap-6 border-r-[1px] mr-4 pr-4 max-md:hidden">
-          <Link href="/lesson-planner" className="hover:border-b-[1px] duration-200 transition-all">Lesson planner</Link>
-          <Link href="/resources" className="hover:border-b-[1px] duration-200 transition-all">Resources</Link>
+          <Link href="/lesson-planner" className="hover:border-b-[1px]">Lesson planner</Link>
+          <Link href="/resources" className="hover:border-b-[1px]">Resources</Link>
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/login" className="hover:border-b-[1px] duration-200 transition-all max-sm:hidden">Log in</Link>
+          <Link href="/login" className="hover:border-b-[1px] max-sm:hidden">Log in</Link>
           <Link
             className="text-black py-2 px-3 bg-casablanca rounded-full hover:bg-golden-bell max-sm:hidden"
             href="/sign-up"

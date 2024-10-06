@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 // import { useDispatch } from "react-redux";
 
 export default function LoadingPage() {
   // const dispatch = useDispatch(); => had to comment out because it had conflicts with Vercel
-  const router = useRouter();
+  // const router = useRouter();
 
   /*
     useEffect(() => {

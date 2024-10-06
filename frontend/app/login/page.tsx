@@ -59,7 +59,7 @@ const Login = () => {
         </button>
         {error && <div className="text-red-600 mt-5 text-center">{error}</div>}
 
-        <p className="max-sm:text-center">Don't have an account? <span className="font-bold cursor-pointer hover:border-b-[1px]" onClick={() => router.push("/sign-up")}>Sign up</span></p>
+        <p className="max-sm:text-center">Don&apos;t have an account? <span className="font-bold cursor-pointer hover:border-b-[1px]" onClick={() => router.push("/sign-up")}>Sign up</span></p>
       </form>
     </div>
   );
