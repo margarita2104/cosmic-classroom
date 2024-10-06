@@ -16,7 +16,7 @@ const SignUp = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await AxiosCosmicClassroom.post("/registration/", {
+      const response = await AxiosCosmicClassroom.post("/auth/registration/", {
         email: email,
       });
       setResponse(response);
