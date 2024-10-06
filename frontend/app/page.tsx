@@ -2,6 +2,8 @@ import Link from "next/link";
 import earthImage from "./assets/images/earth.png";
 import rocketImage from "./assets/images/rocket.png";
 
+import Link from "next/link"
+
 export default function Home() {
 
   return (
