@@ -159,18 +159,18 @@ export default function Dashboard() {
     }
   };
 
-  const handleCountryChange = (selectedOption: CountryOption | null) => {
-    setUserInfo((prevState) => ({
-      ...prevState,
-      location: selectedOption ? selectedOption.value : "",
-    }));
-  };
+  // const handleCountryChange = (selectedOption: CountryOption | null) => {
+  //   setUserInfo((prevState) => ({
+  //     ...prevState,
+  //     location: selectedOption ? selectedOption.value : "",
+  //   }));
+  // };
 
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        let formData = new FormData();
+        const formData = new FormData();
         if (avatarFile) {
           formData.append("avatar", avatarFile);
         }
@@ -189,7 +189,6 @@ export default function Dashboard() {
 
         console.log("Updating user info with:", updatedUserInfo);
 
-        // Make the API request using formData if avatarFile exists, else use JSON
         let response;
         if (formData) {
           response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
@@ -212,8 +211,8 @@ export default function Dashboard() {
         }
 
         console.log("User info updated:", response.data);
-        await fetchUserInfo(); // Fetch updated user info
-        setAvatarFile(null); // Reset avatar file state
+        await fetchUserInfo(); 
+        setAvatarFile(null); 
         setEditProfileInfo(false);
       }
     } catch (error: unknown) {
