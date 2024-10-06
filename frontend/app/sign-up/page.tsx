@@ -27,7 +27,7 @@ const SignUp = () => {
   };
 
   if (response) {
-    router.push("/registration/validation");
+    router.push("/profile-creation");
   }
   return (
     <div className="flex flex-col items-center justify-center mt-24">
