@@ -1,11 +1,9 @@
-import streamlit as st
 import os
 import time
 import PyPDF2  # Import PDF library
 from groq import Groq
 from dotenv import load_dotenv
 import openai
-from fpdf import FPDF  # Import FPDF for PDF generation
 
 # Load environment variables from .env file
 load_dotenv()
@@ -138,27 +136,6 @@ def generate_lesson_plan(extracted_text, user_input):
     
     return response.choices[0].message.content
 
-# Define a function to create a PDF file
-def create_pdf(lesson_plan):
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-
-    pdf.set_font("Arial", size=12)
-
-    # Add a title
-    pdf.cell(200, 10, txt="Generated Lesson Plan", ln=True, align='C')
-    pdf.ln(10)  # Add a line break
-
-    # Add the lesson plan text
-    pdf.multi_cell(0, 10, lesson_plan)
-
-    # Save the PDF to a bytes buffer
-    pdf_output_path = "generated_lesson_plan.pdf"
-    pdf.output(pdf_output_path)
-
-    return pdf_output_path
-
 def create_lesson_plan_from_user_input(user_input: str):
     classification_prompt = create_pdf_classification_prompt(user_input)
     # Fixed model selection for LLaMA 3.1-8B
@@ -174,33 +151,4 @@ def create_lesson_plan_from_user_input(user_input: str):
     lesson_plan = generate_lesson_plan(pdf_text, user_input)
     
     # Create PDF
-    pdf_file_path = create_pdf(lesson_plan)
-    return pdf_file_path, lesson_plan
-
-# Streamlit app layout
-st.title("Exoplanet Lesson Plan Generator")
-
-# Input section for user query
-user_input = st.text_area("Enter your query and details (e.g., teaching plan, topic focus, age group, number of students, duration):", height=200)
-
-
-
-if st.button("Get Lesson Plan"):
-    if user_input:
-               
-        # Show loading spinner while waiting for response
-        with st.spinner("Generating your lesson..."):
-            pdf_file_path, lesson_plan = create_lesson_plan_from_user_input(user_input)
-        
-        
-        st.subheader("Generated Lesson Plan:")
-        st.write(lesson_plan)
-
-        
-
-        # Download link for the PDF
-        with open(pdf_file_path, "rb") as file:
-            st.download_button("Download Lesson Plan as PDF", data=file, file_name="lesson_plan.pdf")
-
-    else:
-        st.write("Please enter a query.")
+    return "", lesson_plan

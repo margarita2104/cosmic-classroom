@@ -8,10 +8,8 @@ django-countries==7.6.1
 django-cors-headers==4.4.0
 python-dotenv==1.0.1
 PyPDF2
-streamlit
 groq
 cerebras_cloud_sdk
 openai
 reportlab
-fpdf
 drf-yasg==1.21.7
