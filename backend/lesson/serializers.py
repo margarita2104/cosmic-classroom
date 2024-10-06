@@ -5,4 +5,4 @@ class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = '__all__'
-        ready_only = ['created_lesson']
+        read_only_fields = ['created_lesson']
