@@ -4,10 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AxiosCosmicClassroom } from "../axios/Axios";
-import LoginSubmitHandler from "../components/login/LoginSubmitHandler";
+import LoginSubmitHandler from "../components/login/LoginSubmitHandler"; 
 
 export default function ProfileCreation() {
   const router = useRouter();
+  const dispatch = useDispatch();
+
   const validationMessages = {
     passwordTooShort:
       "This password is too short. It must contain at least 8 characters.",
@@ -15,17 +17,15 @@ export default function ProfileCreation() {
     passwordNumeric: "This password is entirely numeric.",
   };
 
-  const dispatch = useDispatch();
-
   const [email, setEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState("");
-  const [passwordRepeat, setPasswordRepeat] = useState("");
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [password, setPassword] = useState<string>("");
+  const [passwordRepeat, setPasswordRepeat] = useState<string>("");
+  const [firstname, setFirstName] = useState<string>("");
+  const [lastname, setLastName] = useState<string>("");
+  const [code, setCode] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
   const errorSetter = (error: string) => {
     setError(error);
@@ -34,6 +34,7 @@ export default function ProfileCreation() {
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted");
+
     if (password.length < 8) {
       setError(validationMessages.passwordTooShort);
       console.log("Password too short");
@@ -49,7 +50,7 @@ export default function ProfileCreation() {
       console.log("Password is too common");
       return;
     }
-    errorSetter("");
+    errorSetter(""); 
 
     if (password === passwordRepeat) {
       console.log("Passwords match, proceeding with submission");
@@ -57,10 +58,10 @@ export default function ProfileCreation() {
         const response = await AxiosCosmicClassroom.post(
           "/auth/registration/validation/",
           {
-            email: email,
-            username: username,
-            code: code,
-            password: password,
+            email,
+            username,
+            code,
+            password,
             password_repeat: passwordRepeat,
             first_name: firstname,
             last_name: lastname,
@@ -72,17 +73,11 @@ export default function ProfileCreation() {
         if (response.status === 201) {
           setSuccess("Registration successful! Logging in...");
 
-          router.push("/login");
+          await LoginSubmitHandler(email, password, errorSetter, dispatch, router);
 
-          await LoginSubmitHandler(
-            email,
-            password,
-            errorSetter,
-            dispatch,
-            router.push
-          );
+          router.push("/login");
         }
-      } catch (error: string) {
+      } catch (error: any) {
         console.error("Error during submission:", error);
         errorSetter(error.response?.data?.message || "An error occurred");
       }
@@ -126,7 +121,7 @@ export default function ProfileCreation() {
           <div className="flex flex-col gap-1">
             <label htmlFor="email">Email</label>
             <input
-              type="text"
+              type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="md:w-96 py-3 px-4 bg-white/70 rounded-3xl text-black placeholder:text-gray-600 outline-none border-2 border-transparent hover:border-blue-900"
