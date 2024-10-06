@@ -62,3 +62,4 @@ class RetrieveUpdateDestroyUserView(RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = "user_id"
     permission_classes = [IsAdminUser]
 
+
