@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'country', 'first_name', 'last_name']
+        fields = ['email', 'username', 'country', 'first_name', 'last_name', 'avatar']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.country = validated_data.get('country', instance.country)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.save()
         return instance
 
