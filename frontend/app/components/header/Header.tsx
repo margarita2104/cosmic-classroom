@@ -12,10 +12,8 @@ const Header = () => {
 
   return (
     <header className="flex items-center justify-between text-white bg-blue-whale py-3 px-3 ">
-      <div className="flex gap-4 max-sm:justify-center max-sm:w-full">
-        <Link href="/">
-          <Logo />   
-        </Link>
+      <div className="flex items-center gap-4 max-sm:justify-center max-sm:w-full">
+        <h1 className="text-lg sm:text-3xl"><Link href={"/"}>CosmicClassroom</Link></h1>
         <Menu onClick={() => setToggleMenu(true)} className="cursor-pointer sm:hidden" />
       </div>
       
@@ -39,7 +37,7 @@ const Header = () => {
 
       {toggleMenu && (
         <section className="absolute bg-white/40 backdrop-blur-sm top-0 left-0 w-full h-full z-10">
-          <div className="flex flex-col gap-8 absolute right-0 top-0 w-2/3 h-full bg-gray-800/80 backdrop-blur-sm p-2">
+          <div className="flex flex-col gap-8 absolute right-0 top-0 sm:w-2/3 h-full bg-gray-800/80 backdrop-blur-sm p-2">
             <X className="self-end cursor-pointer" onClick={() => setToggleMenu(false)} />
 
             <h2 className="self-center">Menu</h2>

@@ -23,7 +23,7 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center mt-24">
       <h1 className="mb-12 text-2xl font-nasalization">Log in</h1>
       <form
-        className="flex flex-col justify-center items-center"
+        className="flex flex-col justify-center items-center gap-8"
         onSubmit={submitHandler}
       >
         <div className="flex flex-col">
@@ -32,7 +32,7 @@ const Login = () => {
           </label>
           <input
             id="email"
-            className="w-96 py-3 px-4 mb-6 bg-white rounded-3xl text-black outline-none border-2 border-transparent hover:border-royal-blue"
+            className="sm:w-96 py-3 px-4 bg-white/70 rounded-3xl text-black placeholder:text-gray-600 outline-none border-2 border-transparent hover:border-blue-900"
             type="email"
             required
             placeholder="Your email"
@@ -46,7 +46,7 @@ const Login = () => {
           </label>
           <input
             id="password"
-            className="w-96 py-3 px-4 mb-6 bg-white rounded-3xl text-black outline-none border-2 border-transparent hover:border-royal-blue"
+            className="sm:w-96 py-3 px-4 bg-white/70 rounded-3xl text-black placeholder:text-gray-600 outline-none border-2 border-transparent hover:border-blue-900"
             type="password"
             required
             placeholder="Your password"
@@ -58,6 +58,8 @@ const Login = () => {
           Log in
         </button>
         {error && <div className="text-red-600 mt-5 text-center">{error}</div>}
+
+        <p className="max-sm:text-center">Don't have an account? <span className="font-bold cursor-pointer hover:border-b-[1px]" onClick={() => router.push("/sign-up")}>Sign up</span></p>
       </form>
     </div>
   );
