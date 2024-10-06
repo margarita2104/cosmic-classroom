@@ -2,47 +2,123 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import countryList from "react-select-country-list";
 import userTest from "../assets/images/dashboard/astronaut.png";
 import editProfile from "../assets/images/dashboard/edit-profile.png";
 import planLesson from "../assets/images/dashboard/plan-lesson.png";
 import addResource from "../assets/images/dashboard/add-resource.png";
 import { AxiosCosmicClassroom } from "@/app/axios/Axios";
+import Select from "react-select";
+import { AxiosError } from "axios";
+
+interface UserInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  location: string;
+}
+
+interface CountryOption {
+  label: string;
+  value: string;
+}
 
 export default function Dashboard() {
   const [editProfileInfo, setEditProfileInfo] = useState(false);
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState<UserInfo>({
     firstName: "",
     lastName: "",
     email: "",
     location: "",
   });
 
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        const response = await AxiosCosmicClassroom.get("/user/me/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const { first_name, last_name, email, country } = response.data;
+        setUserInfo({
+          firstName: first_name,
+          lastName: last_name,
+          email: email,
+          location: country || "Unknown",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-          const response = await AxiosCosmicClassroom.get("/user/me/", {
+    fetchUserInfo();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserInfo((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleCountryChange = (selectedOption: CountryOption | null) => {
+    setUserInfo((prevState) => ({
+      ...prevState,
+      location: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        const updatedUserInfo = {
+          email: userInfo.email,
+          first_name: userInfo.firstName,
+          last_name: userInfo.lastName,
+          country: userInfo.location || "",
+        };
+
+        console.log("Updating user info with:", updatedUserInfo);
+        const response = await AxiosCosmicClassroom.patch(
+          "/user/me/",
+          updatedUserInfo,
+          {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          });
-          const { first_name, last_name, email, location } = response.data;
-          setUserInfo({
-            firstName: first_name,
-            lastName: last_name,
-            email: email,
-            location: location || "Unknown",
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-      }
-    };
+          }
+        );
 
-    fetchUserInfo();
-  }, []);
+        console.log("User info updated:", response.data);
+        await fetchUserInfo();
+        setEditProfileInfo(false);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Failed to update user info:", error.message);
+      } else if (isAxiosError(error)) {
+        if (error.response) {
+          console.error("Error updating user info:", error.response.data);
+        } else {
+          console.error("Axios error without response:", error.message);
+        }
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
+  };
+
+  function isAxiosError(error: unknown): error is AxiosError {
+    return (error as AxiosError).response !== undefined;
+  }
+  const countryOptions = countryList().getData();
 
   return (
     <main className="flex flex-col gap-4 container py-4">
@@ -93,7 +169,7 @@ export default function Dashboard() {
 
             <div
               className="flex items-center gap-2 cursor-pointer hover:bg-[#f3b643] duration-200 transition-all py-3 px-6 rounded-[20px]"
-              onClick={() => router.push("/lesson-planner")} 
+              onClick={() => router.push("/lesson-planner")}
             >
               <span className="w-12">
                 <img src={planLesson.src} alt="plan a lesson logo" />
@@ -121,6 +197,9 @@ export default function Dashboard() {
                 </span>
                 <input
                   type="text"
+                  name="firstName"
+                  value={userInfo.firstName}
+                  onChange={handleInputChange}
                   className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
                   placeholder="Buzz"
                 />
@@ -132,6 +211,9 @@ export default function Dashboard() {
                 </span>
                 <input
                   type="text"
+                  name="lastName"
+                  value={userInfo.lastName}
+                  onChange={handleInputChange}
                   className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
                   placeholder="Aldrin"
                 />
@@ -143,6 +225,9 @@ export default function Dashboard() {
                 </span>
                 <input
                   type="text"
+                  name="email"
+                  value={userInfo.email}
+                  onChange={handleInputChange}
                   className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
                   placeholder="buzz.aldrin@astronaut.moon"
                 />
@@ -150,12 +235,18 @@ export default function Dashboard() {
 
               <div className="flex gap-2">
                 <span className="w-24">
-                  <strong>Location</strong>
+                  <strong>Country</strong>
                 </span>
-                <input
-                  type="text"
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="The Moon"
+                <Select
+                  options={countryOptions}
+                  value={
+                    countryOptions.find(
+                      (option) => option.value === userInfo.location
+                    ) || null
+                  }
+                  onChange={handleCountryChange}
+                  className="w-full"
+                  placeholder="Select your country"
                 />
               </div>
             </div>
@@ -167,7 +258,10 @@ export default function Dashboard() {
               >
                 Cancel
               </button>
-              <button className="bg-white rounded-2xl py-2 px-4 hover:bg-green-700 hover:scale-105 duration-200 transition-all">
+              <button
+                className="bg-white rounded-2xl py-2 px-4 hover:bg-green-700 hover:scale-105 duration-200 transition-all"
+                onClick={handleSave}
+              >
                 Save
               </button>
             </div>
@@ -181,32 +275,17 @@ export default function Dashboard() {
         <article className="flex flex-col gap-2 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
           <h3 className="font-bold">My lessons</h3>
 
-          <ul className="flex flex-col gap-2 list-disc pl-5">
-            <li>Exploring the habitability of exoplanets</li>
-            <li>Exploring the habitability of exoplanets</li>
-            <li>Exploring the habitability of exoplanets</li>
-            <li>Exploring the habitability of exoplanets</li>
-            <li>Exploring the habitability of exoplanets</li>
-          </ul>
-
-          <strong>Show more</strong>
+          <p>No lessons available yet.</p>
         </article>
 
-        {/* Favourite resources part */}
+        {/* Favourites part */}
         <article className="flex flex-col gap-2 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
           <h3 className="font-bold">Favourite resources</h3>
 
-          <ul className="flex flex-col gap-2 list-disc pl-5">
-            <li>What is an exoplanet</li>
-            <li>What is an exoplanet</li>
-            <li>What is an exoplanet</li>
-            <li>What is an exoplanet</li>
-            <li>What is an exoplanet</li>
-          </ul>
-
-          <strong>Show more</strong>
+          <p>No resources available yet.</p>
         </article>
       </section>
     </main>
   );
 }
+
