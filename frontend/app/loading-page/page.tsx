@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 const LoadingPage = () => {
-  const dispatch = useDispatch();
+  {/*const dispatch = useDispatch(); => had to comment out because it had conflicts with Vercel*/}
   const router = useRouter();
 
   useEffect(() => {
