@@ -69,3 +69,12 @@ header {
 .font-nasalization {
   font-family: 'Nasalization';
 }
+
+/*Boxes used for the dashboard mainly*/
+.box-color-dashboard {
+  background-color: rgb(217 217 217 / 0.8);
+}
+
+.box-color-lesson {
+  background-color: rgb(243 182 67 / 0.8);
+}

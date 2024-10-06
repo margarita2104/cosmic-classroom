@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <Providers>
       <html lang="en">
-        <body className={`antialiased flex flex-col min-h-screen text-white`}>
+        <body className={`antialiased flex flex-col min-h-screen text-white overflow-x-hidden`}>
           <Header />
           <div className="px-5 flex items-center justify-center">{children}</div>
         </body>
