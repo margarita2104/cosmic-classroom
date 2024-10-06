@@ -31,7 +31,7 @@ interface CountryOption {
   value: string;
 }
 
-const countryOptions: CountryOption[] = countryList().getData(); // Fetch country options here
+const countryOptions: CountryOption[] = countryList().getData(); 
 
 export default function Dashboard() {
   const [editProfileInfo, setEditProfileInfo] = useState(false);
@@ -179,8 +179,7 @@ export default function Dashboard() {
         formData.append("last_name", userInfo.lastName);
         formData.append("country", userInfo.location || "");
 
-        let response;
-        response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
+        const response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
