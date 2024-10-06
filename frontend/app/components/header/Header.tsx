@@ -6,13 +6,14 @@ import Link from "next/link";
 import { X, Menu } from "lucide-react";
 import { login_user, logout_user } from "@/app/store/slices/UserSlice";
 import { AxiosCosmicClassroom } from "@/app/axios/Axios";
+import { useAppSelector } from "@/app/store/store";
 
 const Header = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
 
-  const accessToken = useSelector((state) => state.user.accessToken);
+  const accessToken = useAppSelector((state) => state.user.accessToken);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
