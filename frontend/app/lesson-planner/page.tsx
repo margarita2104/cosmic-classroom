@@ -1,5 +1,3 @@
-import { ChevronDown } from "lucide-react"
-
 import starComet from "@/app/assets/images/lesson-planner/star-comet.png"
 import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png"
 import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png"
