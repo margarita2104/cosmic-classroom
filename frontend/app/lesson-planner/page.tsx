@@ -23,8 +23,6 @@ const LessonPlanner = () => {
   const accessToken = useAppSelector((state) => state.user.accessToken);
 
   const handleCreateLessonPlan = async () => {
-    setLoading(true); // Start loading state
-    setError(null); // Clear any previous error
     console.log(accessToken);
 
     try {
@@ -40,18 +38,20 @@ const LessonPlanner = () => {
           },
         }
       );
-      console.log("Response received:", response);
 
       if (!response) {
         throw new Error("Failed to create lesson plan");
       }
 
       const data = response.data;
-      setLesson(data.lesson); // Assuming the API returns a lesson plan
+      setLesson(data.created_lesson); // Assuming the API returns a lesson plan
+      console.log("Response received:", lesson);
     } catch (err) {
-      setError(err.message); // Handle any errors
+      setError(err.message);
+      console.log("error", error);
     } finally {
       setLoading(false); // Stop loading state
+      console.log("loading", loading);
     }
   };
 
