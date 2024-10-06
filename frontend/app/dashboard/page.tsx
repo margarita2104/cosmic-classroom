@@ -16,6 +16,7 @@ interface UserInfo {
   lastName: string;
   email: string;
   location: string;
+  avatar: string | null;
 }
 
 interface Article {
@@ -39,7 +40,9 @@ export default function Dashboard() {
     lastName: "",
     email: "",
     location: "",
+    avatar: null,
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [article, setArticle] = useState<Article>({
     name: "",
@@ -57,12 +60,15 @@ export default function Dashboard() {
             Authorization: `Bearer ${token}`,
           },
         });
-        const { first_name, last_name, email, country } = response.data;
+        const { first_name, last_name, email, country, avatar } = response.data;
+        console.log("Fetched avatar:", avatar);
+
         setUserInfo({
           firstName: first_name,
           lastName: last_name,
           email: email,
           location: country || "Unknown",
+          avatar: avatar || null,
         });
       }
     } catch (error) {
@@ -74,7 +80,9 @@ export default function Dashboard() {
     fetchUserInfo();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     if (name in article) {
       setArticle((prevState) => ({
@@ -86,6 +94,13 @@ export default function Dashboard() {
         ...prevState,
         [name]: value,
       }));
+    }
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setAvatarFile(files[0]);
     }
   };
 
@@ -111,12 +126,16 @@ export default function Dashboard() {
       }
 
       if (token) {
-        const response = await AxiosCosmicClassroom.post("/articles/", formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await AxiosCosmicClassroom.post(
+          "/articles/",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         console.log("Article added:", response.data);
         setArticle({
@@ -151,6 +170,16 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("accessToken");
       if (token) {
+        let formData = new FormData();
+        if (avatarFile) {
+          formData.append("avatar", avatarFile);
+        }
+
+        formData.append("email", userInfo.email);
+        formData.append("first_name", userInfo.firstName);
+        formData.append("last_name", userInfo.lastName);
+        formData.append("country", userInfo.location || "");
+
         const updatedUserInfo = {
           email: userInfo.email,
           first_name: userInfo.firstName,
@@ -159,14 +188,32 @@ export default function Dashboard() {
         };
 
         console.log("Updating user info with:", updatedUserInfo);
-        const response = await AxiosCosmicClassroom.patch("/user/me/", updatedUserInfo, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+
+        // Make the API request using formData if avatarFile exists, else use JSON
+        let response;
+        if (formData) {
+          response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        } else {
+          response = await AxiosCosmicClassroom.patch(
+            "/user/me/",
+            updatedUserInfo,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
 
         console.log("User info updated:", response.data);
-        await fetchUserInfo();
+        await fetchUserInfo(); // Fetch updated user info
+        setAvatarFile(null); // Reset avatar file state
         setEditProfileInfo(false);
       }
     } catch (error: unknown) {
@@ -194,7 +241,12 @@ export default function Dashboard() {
     <main className="flex flex-col gap-4 container py-4">
       <section className="flex max-sm:flex-col max-sm:text-center items-center gap-2">
         <div className="flex rounded-full w-24 h-24 overflow-hidden">
-          <img src={userTest.src} alt="User test image" className="cover" />
+          {/* Display user avatar if available, else fallback to userTest image */}
+          <img
+            src={userInfo.avatar ? userInfo.avatar : userTest.src}
+            alt="User avatar"
+            className="cover"
+          />
         </div>
 
         <div>
@@ -205,14 +257,32 @@ export default function Dashboard() {
       </section>
 
       <div className="flex gap-4 max-sm:flex-col">
-        <section className={`flex flex-col gap-2 box-color-dashboard text-black p-2 rounded-2xl ${editProfileInfo || addResourceMode ? "w-1/4" : "w-full"} max-sm:w-full`}>
-          <nav className={`flex ${editProfileInfo || addResourceMode ? "flex-col gap-2 self-start w-full" : "justify-between self-center"} max-sm:flex-col max-sm:self-start max-sm:w-full`}>
+        <section
+          className={`flex flex-col gap-2 box-color-dashboard text-black p-2 rounded-2xl ${
+            editProfileInfo || addResourceMode ? "w-1/4" : "w-full"
+          } max-sm:w-full`}
+        >
+          <nav
+            className={`flex ${
+              editProfileInfo || addResourceMode
+                ? "flex-col gap-2 self-start w-full"
+                : "justify-between self-center"
+            } max-sm:flex-col max-sm:self-start max-sm:w-full`}
+          >
             <div
-              className={`flex items-center gap-2 cursor-pointer ${editProfileInfo ? "bg-[#f3b643]" : "hover:bg-[#f3b643] duration-200 transition-all"} py-3 px-6 rounded-[20px]`}
+              className={`flex items-center gap-2 cursor-pointer ${
+                editProfileInfo
+                  ? "bg-[#f3b643]"
+                  : "hover:bg-[#f3b643] duration-200 transition-all"
+              } py-3 px-6 rounded-[20px]`}
               onClick={() => setEditProfileInfo(true)}
             >
               <span className="flex items-center justify-center w-12">
-                <img src={editProfile.src} alt="edit profile logo" className="w-8" />
+                <img
+                  src={editProfile.src}
+                  alt="Edit profile"
+                  className="cover"
+                />
               </span>
               Edit profile
             </div>
@@ -228,7 +298,11 @@ export default function Dashboard() {
             </div>
 
             <div
-              className={`flex items-center gap-2 cursor-pointer ${addResourceMode ? "bg-[#f3b643]" : "hover:bg-[#f3b643] duration-200 transition-all"} py-3 px-6 rounded-[20px]`}
+              className={`flex items-center gap-2 cursor-pointer ${
+                addResourceMode
+                  ? "bg-[#f3b643]"
+                  : "hover:bg-[#f3b643] duration-200 transition-all"
+              } py-3 px-6 rounded-[20px]`}
               onClick={() => setAddResourceMode(true)}
             >
               <span className="w-12">
@@ -244,36 +318,59 @@ export default function Dashboard() {
             <h3 className="font-bold">Edit profile</h3>
             <div className="flex flex-wrap gap-6 pr-24">
               <div className="flex gap-2">
-                <span className="w-24"><strong>First name</strong></span>
+                <span className="w-24">
+                  <strong>First name</strong>
+                </span>
                 <input
                   type="text"
                   name="firstName"
                   value={userInfo.firstName}
                   onChange={handleInputChange}
                   className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Buzz"
+                  placeholder="First Name"
                 />
               </div>
 
               <div className="flex gap-2">
-                <span className="w-24"><strong>Last name</strong></span>
+                <span className="w-24">
+                  <strong>Last name</strong>
+                </span>
                 <input
                   type="text"
                   name="lastName"
                   value={userInfo.lastName}
                   onChange={handleInputChange}
                   className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Lightyear"
+                  placeholder="Last Name"
                 />
               </div>
 
               <div className="flex gap-2">
-                <span className="w-24"><strong>Location</strong></span>
+                <span className="w-24">
+                  <strong>Location</strong>
+                </span>
                 <Select
                   name="location"
                   options={countryOptions}
                   value={{ label: userInfo.location, value: userInfo.location }}
-                  onChange={handleCountryChange}
+                  onChange={(selectedOption) =>
+                    setUserInfo((prev) => ({
+                      ...prev,
+                      location: selectedOption?.value || "",
+                    }))
+                  }
+                />
+              </div>
+
+              {/* Avatar upload input */}
+              <div className="flex gap-2">
+                <span className="w-24">
+                  <strong>Avatar</strong>
+                </span>
+                <input
+                  type="file"
+                  name="avatar"
+                  onChange={handleAvatarChange}
                 />
               </div>
             </div>
@@ -300,7 +397,9 @@ export default function Dashboard() {
             <h3 className="font-bold">Add a Resource</h3>
             <div className="flex flex-wrap gap-6 pr-24">
               <div className="flex gap-2">
-                <span className="w-24"><strong>Name</strong></span>
+                <span className="w-24">
+                  <strong>Name</strong>
+                </span>
                 <input
                   type="text"
                   name="name"
@@ -312,7 +411,9 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-2">
-                <span className="w-24"><strong>Description</strong></span>
+                <span className="w-24">
+                  <strong>Description</strong>
+                </span>
                 <textarea
                   name="description"
                   value={article.description}
@@ -323,7 +424,9 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-2">
-                <span className="w-24"><strong>Link</strong></span>
+                <span className="w-24">
+                  <strong>Link</strong>
+                </span>
                 <input
                   type="text"
                   name="link"
@@ -335,7 +438,9 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-2">
-                <span className="w-24"><strong>Image</strong></span>
+                <span className="w-24">
+                  <strong>Image</strong>
+                </span>
                 <input type="file" name="image" onChange={handleFileChange} />
               </div>
             </div>
