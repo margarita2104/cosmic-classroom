@@ -18,41 +18,34 @@ const LessonPlanner = () => {
 
   const [lesson, setLesson] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const accessToken = useAppSelector((state) => state.user.accessToken);
 
   const handleCreateLessonPlan = async () => {
     console.log(accessToken);
 
-    try {
-      // Post the user input (transcript) to the API
-      const response = await AxiosCosmicClassroom.post(
-        "/lessons/",
-        {
-          user_prompt: transcript,
+    // Post the user input (transcript) to the API
+    const response = await AxiosCosmicClassroom.post(
+      "/lessons/",
+      {
+        user_prompt: transcript,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (!response) {
-        throw new Error("Failed to create lesson plan");
       }
+    );
 
-      const data = response.data;
-      setLesson(data.created_lesson); // Assuming the API returns a lesson plan
-      console.log("Response received:", lesson);
-    } catch (err) {
-      setError(err.message);
-      console.log("error", error);
-    } finally {
-      setLoading(false); // Stop loading state
-      console.log("loading", loading);
+    if (!response) {
+      throw new Error("Failed to create lesson plan");
     }
+
+    const data = response.data;
+    setLesson(data.created_lesson); // Assuming the API returns a lesson plan
+    console.log("Response received:", lesson);
+    setLoading(false); // Stop loading state
+    console.log("loading", loading);
   };
 
   useEffect(() => {
