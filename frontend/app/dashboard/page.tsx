@@ -16,6 +16,14 @@ interface UserInfo {
   lastName: string;
   email: string;
   location: string;
+  avatar: string | null;
+}
+
+interface Article {
+  name: string;
+  description: string;
+  link: string;
+  image: File | null;
 }
 
 interface CountryOption {
@@ -23,14 +31,25 @@ interface CountryOption {
   value: string;
 }
 
+const countryOptions: CountryOption[] = countryList().getData(); 
+
 export default function Dashboard() {
   const [editProfileInfo, setEditProfileInfo] = useState(false);
+  const [addResourceMode, setAddResourceMode] = useState(false);
   const router = useRouter();
   const [userInfo, setUserInfo] = useState<UserInfo>({
     firstName: "",
     lastName: "",
     email: "",
     location: "",
+    avatar: null,
+  });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [article, setArticle] = useState<Article>({
+    name: "",
+    description: "",
+    link: "",
+    image: null,
   });
 
   const fetchUserInfo = async () => {
@@ -42,12 +61,14 @@ export default function Dashboard() {
             Authorization: `Bearer ${token}`,
           },
         });
-        const { first_name, last_name, email, country } = response.data;
+        const { first_name, last_name, email, country, avatar } = response.data;
+
         setUserInfo({
           firstName: first_name,
           lastName: last_name,
           email: email,
           location: country || "Unknown",
+          avatar: avatar || null,
         });
       }
     } catch (error) {
@@ -59,12 +80,82 @@ export default function Dashboard() {
     fetchUserInfo();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setUserInfo((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name in article) {
+      setArticle((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    } else {
+      setUserInfo((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setAvatarFile(files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setArticle((prevState) => ({
+        ...prevState,
+        image: files[0],
+      }));
+    }
+  };
+
+  const handleAddResource = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const formData = new FormData();
+      formData.append("name", article.name);
+      formData.append("description", article.description);
+      formData.append("link", article.link);
+      if (article.image) {
+        formData.append("image", article.image);
+      }
+
+      if (token) {
+        const response = await AxiosCosmicClassroom.post(
+          "/articles/",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log("Article added:", response.data);
+        setArticle({
+          name: "",
+          description: "",
+          link: "",
+          image: null,
+        });
+        setAddResourceMode(false);
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error(
+          "Error adding article:",
+          error.response?.data || error.message
+        );
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
   };
 
   const handleCountryChange = (selectedOption: CountryOption | null) => {
@@ -78,54 +169,49 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        const updatedUserInfo = {
-          email: userInfo.email,
-          first_name: userInfo.firstName,
-          last_name: userInfo.lastName,
-          country: userInfo.location || "",
-        };
+        const formData = new FormData();
+        if (avatarFile) {
+          formData.append("avatar", avatarFile);
+        }
 
-        console.log("Updating user info with:", updatedUserInfo);
-        const response = await AxiosCosmicClassroom.patch(
-          "/user/me/",
-          updatedUserInfo,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        formData.append("email", userInfo.email);
+        formData.append("first_name", userInfo.firstName);
+        formData.append("last_name", userInfo.lastName);
+        formData.append("country", userInfo.location || "");
+
+        const response = await AxiosCosmicClassroom.patch("/user/me/", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         console.log("User info updated:", response.data);
         await fetchUserInfo();
+        setAvatarFile(null);
         setEditProfileInfo(false);
       }
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Failed to update user info:", error.message);
-      } else if (isAxiosError(error)) {
-        if (error.response) {
-          console.error("Error updating user info:", error.response.data);
-        } else {
-          console.error("Axios error without response:", error.message);
-        }
+      if (error instanceof AxiosError) {
+        console.error(
+          "Error updating user info:",
+          error.response?.data || error.message
+        );
       } else {
         console.error("An unexpected error occurred:", error);
       }
     }
   };
 
-  function isAxiosError(error: unknown): error is AxiosError {
-    return (error as AxiosError).response !== undefined;
-  }
-  const countryOptions = countryList().getData();
-
   return (
     <main className="flex flex-col gap-4 container py-4">
-      {/* User informations */}
       <section className="flex max-sm:flex-col max-sm:text-center items-center gap-2">
         <div className="flex rounded-full w-24 h-24 overflow-hidden">
-          <img src={userTest.src} alt="User test image" className="cover" />
+          <img
+            src={userInfo.avatar || userTest.src}
+            alt="User avatar"
+            className="cover"
+          />
         </div>
 
         <div>
@@ -136,22 +222,21 @@ export default function Dashboard() {
       </section>
 
       <div className="flex gap-4 max-sm:flex-col">
-        {/* Navigation part in the Dashboard */}
         <section
           className={`flex flex-col gap-2 box-color-dashboard text-black p-2 rounded-2xl ${
-            editProfileInfo === true ? "w-1/4" : "w-full"
+            editProfileInfo || addResourceMode ? "w-1/4" : "w-full"
           } max-sm:w-full`}
         >
           <nav
             className={`flex ${
-              editProfileInfo === true
+              editProfileInfo || addResourceMode
                 ? "flex-col gap-2 self-start w-full"
                 : "justify-between self-center"
             } max-sm:flex-col max-sm:self-start max-sm:w-full`}
           >
             <div
               className={`flex items-center gap-2 cursor-pointer ${
-                editProfileInfo === true
+                editProfileInfo
                   ? "bg-[#f3b643]"
                   : "hover:bg-[#f3b643] duration-200 transition-all"
               } py-3 px-6 rounded-[20px]`}
@@ -160,8 +245,8 @@ export default function Dashboard() {
               <span className="flex items-center justify-center w-12">
                 <img
                   src={editProfile.src}
-                  alt="edit profile logo"
-                  className="w-8"
+                  alt="Edit profile"
+                  className="cover"
                 />
               </span>
               Edit profile
@@ -177,7 +262,14 @@ export default function Dashboard() {
               Plan a lesson
             </div>
 
-            <div className="flex items-center gap-2 cursor-pointer hover:bg-[#f3b643] duration-200 transition-all py-3 px-6 rounded-[20px]">
+            <div
+              className={`flex items-center gap-2 cursor-pointer ${
+                addResourceMode
+                  ? "bg-[#f3b643]"
+                  : "hover:bg-[#f3b643] duration-200 transition-all"
+              } py-3 px-6 rounded-[20px]`}
+              onClick={() => setAddResourceMode(true)}
+            >
               <span className="w-12">
                 <img src={addResource.src} alt="add a resource logo" />
               </span>
@@ -189,7 +281,6 @@ export default function Dashboard() {
         {editProfileInfo && (
           <section className="flex flex-col gap-4 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
             <h3 className="font-bold">Edit profile</h3>
-
             <div className="flex flex-wrap gap-6 pr-24">
               <div className="flex gap-2">
                 <span className="w-24">
@@ -200,8 +291,7 @@ export default function Dashboard() {
                   name="firstName"
                   value={userInfo.firstName}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Buzz"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
@@ -214,8 +304,7 @@ export default function Dashboard() {
                   name="lastName"
                   value={userInfo.lastName}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="Aldrin"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
@@ -224,68 +313,113 @@ export default function Dashboard() {
                   <strong>Email</strong>
                 </span>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   value={userInfo.email}
                   onChange={handleInputChange}
-                  className="bg-transparent border-b-[1px] border-black px-4 placeholder:text-gray-500"
-                  placeholder="buzz.aldrin@astronaut.moon"
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
                 />
               </div>
 
               <div className="flex gap-2">
                 <span className="w-24">
-                  <strong>Country</strong>
+                  <strong>Location</strong>
                 </span>
                 <Select
                   options={countryOptions}
-                  value={
-                    countryOptions.find(
-                      (option) => option.value === userInfo.location
-                    ) || null
-                  }
+                  value={countryOptions.find(
+                    (country) => country.value === userInfo.location
+                  )}
                   onChange={handleCountryChange}
                   className="w-full"
-                  placeholder="Select your country"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2 self-end">
-              <button
-                className="bg-white rounded-2xl py-2 px-4 hover:bg-red-700 hover:scale-105 duration-200 transition-all"
-                onClick={() => setEditProfileInfo(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-white rounded-2xl py-2 px-4 hover:bg-green-700 hover:scale-105 duration-200 transition-all"
-                onClick={handleSave}
-              >
-                Save
-              </button>
+            <div className="flex flex-col gap-2">
+              <strong>Avatar</strong>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="file:bg-blue-500 file:text-white"
+              />
             </div>
+
+            <button
+              onClick={handleSave}
+              className="bg-[#f3b643] w-fit rounded-2xl p-3 text-black "
+            >
+              Save changes
+            </button>
+          </section>
+        )}
+
+        {addResourceMode && (
+          <section className="flex flex-col gap-4 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
+            <h3 className="font-bold">Add resource</h3>
+            <div className="flex flex-col gap-6 pr-24">
+              <div className="flex gap-2">
+                <span className="w-24">
+                  <strong>Name</strong>
+                </span>
+                <input
+                  type="text"
+                  name="name"
+                  value={article.name}
+                  onChange={handleInputChange}
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <span className="w-24">
+                  <strong>Description</strong>
+                </span>
+                <textarea
+                  name="description"
+                  value={article.description}
+                  onChange={handleInputChange}
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <span className="w-24">
+                  <strong>Link</strong>
+                </span>
+                <input
+                  type="text"
+                  name="link"
+                  value={article.link}
+                  onChange={handleInputChange}
+                  className="bg-transparent border-b border-gray-400 focus:border-gray-800 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <span className="w-24">
+                  <strong>Image</strong>
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="file:bg-blue-500 file:text-white"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleAddResource}
+              className="bg-[#f3b643] w-fit rounded-2xl p-3 text-black"
+            >
+              Add resource
+            </button>
           </section>
         )}
       </div>
-
-      {/* My lessons and favourite resources section */}
-      <section className="flex gap-4 max-sm:flex-col">
-        {/* My lessons part */}
-        <article className="flex flex-col gap-2 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
-          <h3 className="font-bold">My lessons</h3>
-
-          <p>No lessons available yet.</p>
-        </article>
-
-        {/* Favourites part */}
-        <article className="flex flex-col gap-2 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
-          <h3 className="font-bold">Favourite resources</h3>
-
-          <p>No resources available yet.</p>
-        </article>
-      </section>
     </main>
   );
 }
-
