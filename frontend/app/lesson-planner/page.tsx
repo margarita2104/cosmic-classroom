@@ -6,6 +6,26 @@ import starComet from "@/app/assets/images/lesson-planner/star-comet.png";
 import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png";
 import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png";
 
+// Define types for the SpeechRecognition API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult;
+  length: number;
+}
+
+interface SpeechRecognitionResult {
+  [index: number]: SpeechRecognitionAlternative;
+  length: number;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
 const LessonPlanner = () => {
   const [isListening, setIsListening] = useState(false);
   const [inputText, setInputText] = useState("");
@@ -21,14 +41,14 @@ const LessonPlanner = () => {
 
   const startListening = () => {
     if ('webkitSpeechRecognition' in window) {
-      const recognition = new (window as any).webkitSpeechRecognition();
+      const recognition = new (window as any).webkitSpeechRecognition() as SpeechRecognition;
       recognition.continuous = true;
       recognition.interimResults = true;
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = Array.from(event.results)
-          .map((result: any) => result[0])
-          .map((result: any) => result.transcript)
+          .map((result) => result[0])
+          .map((result) => result.transcript)
           .join('');
         setInputText(transcript);
       };
@@ -41,7 +61,7 @@ const LessonPlanner = () => {
 
   const stopListening = () => {
     if ('webkitSpeechRecognition' in window) {
-      const recognition = new (window as any).webkitSpeechRecognition();
+      const recognition = new (window as any).webkitSpeechRecognition() as SpeechRecognition;
       recognition.stop();
     }
   };
