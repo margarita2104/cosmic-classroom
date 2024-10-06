@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 // import { useEffect } from "react";
 // import { useDispatch } from "react-redux";
 
@@ -24,7 +24,7 @@ export default function LoadingPage() {
       <h1 className="font-bold text-2xl mt-12">Please wait, creating a lesson plan...</h1>
 
       <div className="flex items-center">
-        <img src={"cosmic-classroom/frontend/app/assets/images/path5610.png"} alt="Astronaut" className="h-20 mr-4" />
+        <img src="/" alt="Astronaut" className="h-20 mr-4" />
         <img src="/" alt="Rocket" className="h-20 mr-4" />
         <img src="/" alt="Planet" className="h-20" />
       </div>
