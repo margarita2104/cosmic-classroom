@@ -1,23 +1,18 @@
 {
-  "builds": [
-    {
-      "src": "project/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.10",
-        "maxLambdaSize": "15mb"
+    "builds": [
+      {
+        "src": "project/wsgi.py",
+        "use": "@vercel/python",
+        "config": {
+          "runtime": "python3.10",
+          "maxLambdaSize": "15mb"
+        }
       }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "project/wsgi.py"
-    }
-  ],
-  "hooks": [
-    {
-      "build": "bash vercel_migration.sh"
-    }
-  ]
-}
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "project/wsgi.py"
+      }
+    ]
+  }
