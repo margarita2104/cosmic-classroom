@@ -8,7 +8,8 @@ import editProfile from "../assets/images/dashboard/edit-profile.png";
 import planLesson from "../assets/images/dashboard/plan-lesson.png";
 import addResource from "../assets/images/dashboard/add-resource.png";
 import { AxiosCosmicClassroom } from "@/app/axios/Axios";
-import Select, { ActionMeta } from "react-select";
+import Select from "react-select";
+import { AxiosError } from "axios";
 
 interface UserInfo {
   firstName: string;
@@ -66,10 +67,7 @@ export default function Dashboard() {
     }));
   };
 
-  const handleCountryChange = (
-    selectedOption: CountryOption | null,
-    actionMeta: ActionMeta<CountryOption>
-  ) => {
+  const handleCountryChange = (selectedOption: CountryOption | null) => {
     setUserInfo((prevState) => ({
       ...prevState,
       location: selectedOption ? selectedOption.value : "",
@@ -86,7 +84,7 @@ export default function Dashboard() {
           last_name: userInfo.lastName,
           country: userInfo.location || "",
         };
-  
+
         console.log("Updating user info with:", updatedUserInfo);
         const response = await AxiosCosmicClassroom.patch(
           "/user/me/",
@@ -97,24 +95,29 @@ export default function Dashboard() {
             },
           }
         );
-  
+
         console.log("User info updated:", response.data);
         await fetchUserInfo();
         setEditProfileInfo(false);
       }
     } catch (error: unknown) {
-      if (error instanceof Error && (error as any).response) {
-        console.error(
-          "Error updating user info:",
-          (error as any).response.data
-        );
+      if (error instanceof Error) {
+        console.error("Failed to update user info:", error.message);
+      } else if (isAxiosError(error)) {
+        if (error.response) {
+          console.error("Error updating user info:", error.response.data);
+        } else {
+          console.error("Axios error without response:", error.message);
+        }
       } else {
-        console.error("Failed to update user info:", error);
+        console.error("An unexpected error occurred:", error);
       }
     }
   };
-  
 
+  function isAxiosError(error: unknown): error is AxiosError {
+    return (error as AxiosError).response !== undefined;
+  }
   const countryOptions = countryList().getData();
 
   return (
