@@ -9,6 +9,8 @@ import starComet from "@/app/assets/images/lesson-planner/star-comet.png";
 import spaceshipSmall from "@/app/assets/images/lesson-planner/spaceship-small.png";
 import planetHoop from "@/app/assets/images/lesson-planner/planet-hoop.png";
 
+import ReactMarkdown from "react-markdown";
+
 const LessonPlanner = () => {
   const [transcript, setTranscript] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -18,6 +20,7 @@ const LessonPlanner = () => {
 
   const [lesson, setLesson] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const accessToken = useAppSelector((state) => state.user.accessToken);
 
@@ -143,6 +146,19 @@ const LessonPlanner = () => {
       >
         Create lesson plan
       </button>
+
+      {/* Display loading state */}
+      {loading && <p className="text-center">Loading lesson plan...</p>}
+
+      {/* Display error message */}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
+      {/* Display lesson data in boxes */}
+      {lesson && (
+        <section className="flex flex-col gap-4 box-color-dashboard text-black p-6 pt-4 rounded-2xl w-full">
+          <ReactMarkdown>{lesson}</ReactMarkdown>
+        </section>
+      )}
 
       <img
         src={spaceshipSmall.src}
