@@ -348,7 +348,7 @@ export default function Dashboard() {
 
             <button
               onClick={handleSave}
-              className="bg-[#f3b643] w-full rounded-2xl p-3 text-white"
+              className="bg-[#f3b643] w-fit rounded-2xl p-3 text-black "
             >
               Save changes
             </button>
@@ -413,7 +413,7 @@ export default function Dashboard() {
 
             <button
               onClick={handleAddResource}
-              className="bg-[#f3b643] w-full rounded-2xl p-3 text-white"
+              className="bg-[#f3b643] w-fit rounded-2xl p-3 text-black"
             >
               Add resource
             </button>
