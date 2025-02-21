@@ -1,34 +1,43 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AxiosCosmicClassroom } from "../axios/Axios";
-import { AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [response, setResponse] = useState<AxiosResponse | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
+
     try {
       const response = await AxiosCosmicClassroom.post("/auth/registration/", {
         email: email,
       });
-      setResponse(response);
+      
+      if (response.status === 200 || response.status === 201) {
+        router.push("/profile-creation");
+      }
     } catch (error) {
-      console.error(error);
-      setError("Email Failed");
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 500) {
+        setError("Server error. Please try again later.");
+      } else if (axiosError.response?.status === 400) {
+        setError("Invalid email address.");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+      console.error("Registration error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (response) {
-    router.push("/profile-creation");
-  }
   return (
     <div className="flex flex-col items-center justify-center mt-24">
       <h1 className="mb-12 text-2xl font-nasalization">Sign up</h1>
@@ -48,19 +57,30 @@ const SignUp = () => {
             placeholder="Your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
           />
         </div>
-
-        <div>
-          <button className="btn-yellow w-fit" type="submit">
-            Register
+        <div className="flex flex-col items-center min-h-[80px]">
+          <button 
+            className={`btn-yellow w-fit ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} 
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Registering...' : 'Register'}
           </button>
-          {error && (
-            <div className="text-red-600 text-center">{error}</div>
-          )}
+          <div className="h-6 mt-2"> {/* Fixed height error container */}
+            {error && <div className="text-red-600 text-center">{error}</div>}
+          </div>
         </div>
-
-        <p className="max-sm:text-center">Already have an account? <span className="font-bold cursor-pointer hover:border-b-[1px]" onClick={() => router.push("/login")}>Log in</span></p>
+        <p className="max-sm:text-center">
+          Already have an account?{" "}
+          <span 
+            className="font-bold cursor-pointer hover:border-b-[1px]" 
+            onClick={() => router.push("/login")}
+          >
+            Log in
+          </span>
+        </p>
       </form>
     </div>
   );
