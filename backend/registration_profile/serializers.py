@@ -51,13 +51,13 @@ class ValidationSerializer(serializers.ModelSerializer):
             'last_name': {'required': True}
         }
 
+
     def validate(self, attrs):
         if attrs['password'] != attrs['password_repeat']:
             raise serializers.ValidationError({"password": "Password fields do not match."})
-
         return attrs
 
-    def update(self, **kwargs):
+    def save(self, **kwargs):
         email = self.validated_data['email']
         user = User.objects.get(email=email)
         user.username = self.validated_data['username']

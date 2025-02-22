@@ -36,23 +36,50 @@ class RegistrationView(APIView):
         )
         return Response({'message': 'Registration code sent.'}, status=status.HTTP_201_CREATED)
 
-class ValidationView(generics.CreateAPIView):
-    queryset = User.objects.all()
-
+class ValidationView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = ValidationSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = ValidationSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.data.get('email')
-        code = serializer.data.get('code')
-        user = User.objects.get(email=email)
-        val_code = RegistrationProfile.objects.get(user=user).code
-        if val_code != code:
-            raise ValidationError({'error': 'Invalid activation code'})
+            email = serializer.validated_data.get('email')
+            code = serializer.validated_data.get('code')
 
-        serializer.update()
-        return Response({'message': 'Registration successful.'}, status=status.HTTP_201_CREATED)
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(
+                    {'error': 'No account found with this email address.'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            try:
+                registration_profile = RegistrationProfile.objects.get(user=user)
+                if registration_profile.code != code:
+                    return Response(
+                        {'error': 'Invalid activation code'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except RegistrationProfile.DoesNotExist:
+                return Response(
+                    {'error': 'Registration profile not found.'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Save the user data
+            serializer.save()
+            return Response(
+                {'message': 'Registration successful.'},
+                status=status.HTTP_201_CREATED
+            )
+
+        except Exception as e:
+            print(f"Validation error: {str(e)}")
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class PasswordResetView(APIView):
