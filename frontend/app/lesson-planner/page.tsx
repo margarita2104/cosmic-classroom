@@ -125,7 +125,7 @@ const LessonPlanner = () => {
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
           placeholder="e.g. 25 students, ages 10-12, limited technology, introducing exoplanets, focus on visual learning, 45 minutes"
-          className="flex bg-transparent rounded-2xl h-64 w-full placeholder:text-black/80 p-4 resize-none"
+          className="flex bg-transparent outline-none rounded-2xl h-64 w-full placeholder:text-black/80 p-4 resize-none"
         />
         <button
           onClick={toggleListening}
