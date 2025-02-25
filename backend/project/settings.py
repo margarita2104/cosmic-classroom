@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'article',
     'lesson',
     'registration_profile',
+    'LessonPlanGenerator',
 ]
 
 MIDDLEWARE = [
