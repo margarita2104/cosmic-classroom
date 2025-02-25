@@ -295,12 +295,11 @@ const LessonPlanner = () => {
   }
 
   return (
-    <main className="flex flex-col gap-8 px-8 pb-8 sm:container text-white/80 md:w-2/3 self-center">
+    <main className="flex flex-col gap-8 px-8 pb-8 sm:container text-white md:w-2/3 self-center">
       <h3 className="font-bold drop-shadow-lg text-xl text-center self-center mt-3 z-1 nasa-font">
         Lesson planner
       </h3>
 
-      {/* Star comet background image */}
       <div
         className="w-[200px] absolute right-0 -translate-y-8 -z-10"
         style={{
@@ -322,7 +321,7 @@ const LessonPlanner = () => {
       </section>
 
       <div className="box-color-lesson rounded-2xl text-black p-4">
-        <h4 className="bg-[#F3B643] rounded-full py-2 px-4 font-bold mb-4">
+        <h4 className="text-2xl text-center font-bold mb-4">
           Lesson Details
         </h4>
 
